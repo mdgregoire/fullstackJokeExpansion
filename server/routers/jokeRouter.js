@@ -122,9 +122,11 @@ router.post('/edit', function(request, response){
 router.put('/editSubmit', function(request, response){
   const editedJoke = request.body;
   const sqlText = `UPDATE jokes
-                   SET whos_joke = ${editedJoke.whos_joke}, joke_question = ${editedJoke.joke_question},
-                   punch_line = ${editedJoke.punch_line}, funniness = ${editedJoke.funniness}
+                   SET whos_joke = '${editedJoke.whos_joke}', joke_question = '${editedJoke.joke_question}',
+                   punch_line = '${editedJoke.punch_line}', funniness = ${editedJoke.funniness}
                    WHERE id = ${editedJoke.id}`;
+                   console.log(sqlText);
+
 
   pool.query(sqlText)
   .then(function(result){
