@@ -33,6 +33,11 @@ function onReady(){
     editJoke($(this).attr('id'));
   })//end edit button onclick
 
+  $('#editField').on('click','.editJokeSubmit', function(){
+      submitEditedJoke($(this).attr('id'))
+
+  })
+
 }//end onReady function
 
 function deleteJoke(id){
@@ -64,7 +69,6 @@ function getJokes() {
   })
   .done(function(response){
     console.log('getwassuccesssful', response);
-    // jokeArray = response;
     writeJokes(response);
   })
   .fail(function(error){
@@ -73,27 +77,28 @@ function getJokes() {
 }//end getJokes
 
 function getEditJoke(id){
-
   $.ajax({
     type: 'POST',
     url: '/joke/edit',
     data: { id: id}
   }).done(function(response){
     console.log('getEditJoke Success', response);
-    
-
+    $('#whosJokeEdit').val(response[0].whos_joke);
+    $('#questionEdit').val(response[0].joke_question);
+    $('#punchlineEdit').val(response[0].punch_line);
+    $('#funninessEdit').val(response[0].funniness);
+    $('#editField').append(`<button class ="editJokeSubmit" id= ${response[0].id}>Submit Edited Joke</button>`)
   }).fail(function(response){
     console.log('getEditJoke fail', response);
   });
 }//end getEditJoke
 
 function getNewJoke(){
-  console.log('ingetnewjoke');
   $.ajax({
     type: 'POST',
     url: '/joke/add',
     data: {
-        whos_joke: $('#whoseJokeIn').val(),
+        whos_joke: $('#whosJokeIn').val(),
         joke_question: $('#questionIn').val(),
         punch_line: $('#punchlineIn').val(),
         funniness:  parseInt($('#funniness').val())
@@ -143,6 +148,27 @@ function sortOutputs(howSort){
   });
 
 }//end sortOutputs
+
+function submitEditedJoke(id){
+  console.log('insubmiteditedjoke', id);
+  $.ajax({
+    type: 'PUT',
+    url: '/joke/editSubmit',
+    data: {
+        id: id,
+        whos_joke: $('#whosJokeEdit').val(),
+        joke_question: $('#questionEdit').val(),
+        punch_line: $('#punchlineEdit').val(),
+        funniness:  parseInt($('#funninessEdit').val())
+          }
+  }).done(function(response){
+    console.log('submitEditedJoke Success', response);
+  ////----  //a call to re-write the db of jokes goes here
+    getJokes();
+  }).fail(function(response){
+    console.log('submitEditedJoke fail', response);
+  });
+}
 
 function writeJokes(array){
   $('#whoseJokeIn').val('');
