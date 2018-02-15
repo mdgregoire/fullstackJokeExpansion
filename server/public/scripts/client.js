@@ -4,21 +4,43 @@ $(document).ready(function(){
 })
 
 function onReady(){
+  $('#editField').hide();
+  getJokes();
   $('#addJokeButton').on('click', function(){
     getNewJoke();
   });//end addJokeButton
-  getJokes();
-  $('#outputDiv').on('click', '.jokeOutput', function(){
-    let indexToDelete = $(this).index('.jokeOutput');
-    deleteJoke(indexToDelete);
-  });
+
+  $('#outputDiv').on('click', '.deleteButton', function(){
+    var id = $(this).attr('id');
+    console.log(id, 'indeleteclick');
+    deleteJoke(id);
+  });//end onclick delete button
+
+  $('#outputDiv').on('click', '.upvote', function() {
+    runVote($(this).val(), $(this).attr('id'));
+  })//end onclick upvote
+
+  $('#outputDiv').on('click', '.downvote', function() {
+    runVote($(this).val(), $(this).attr('id'));
+  })//end onclick upvote
+
+  $('#sort').on('click', function(){
+    let howSort = $('#sortSelector').val();
+    sortOutputs(howSort);
+  })//end sort Button onclick
+
+  $('#outputDiv').on('click', '.edit', function(){
+    editJoke($(this).attr('id'));
+  })//end edit button onclick
+
 }//end onReady function
 
-function deleteJoke(index){
+function deleteJoke(id){
+  console.log(id, 'indeetejoke');
   $.ajax({
-    type: 'POST',
+    type: 'DELETE',
     url: '/joke/delete',
-    data: {data : index}
+    data: {data : id}
   })
   .done(function(response){
     console.log('deletewassuccess', response);
@@ -29,6 +51,12 @@ function deleteJoke(index){
   });
 }//end deleteJoke
 
+function editJoke(id){
+  console.log(id, 'ineditjoke');
+  $('#editField').show();
+  getEditJoke(id);
+}//end editJoke
+
 function getJokes() {
   $.ajax({
     type: 'GET',
@@ -36,13 +64,28 @@ function getJokes() {
   })
   .done(function(response){
     console.log('getwassuccesssful', response);
-    jokeArray = response;
+    // jokeArray = response;
     writeJokes(response);
   })
   .fail(function(error){
     console.log(error);
   })
 }//end getJokes
+
+function getEditJoke(id){
+
+  $.ajax({
+    type: 'POST',
+    url: '/joke/edit',
+    data: { id: id}
+  }).done(function(response){
+    console.log('getEditJoke Success', response);
+    
+
+  }).fail(function(response){
+    console.log('getEditJoke fail', response);
+  });
+}//end getEditJoke
 
 function getNewJoke(){
   console.log('ingetnewjoke');
@@ -53,7 +96,6 @@ function getNewJoke(){
         whos_joke: $('#whoseJokeIn').val(),
         joke_question: $('#questionIn').val(),
         punch_line: $('#punchlineIn').val(),
-        date_added: $('#date_addedIn').val(),
         funniness:  parseInt($('#funniness').val())
           }
   }).done(function(response){
@@ -65,17 +107,59 @@ function getNewJoke(){
 
 }//end getNewJoke post function
 
+function runVote(vote, id){
+  console.log("in runvote");
+  console.log(vote, id, 'inrunvote');
+  $.ajax({
+    type: 'PUT',
+    url: '/joke/vote',
+    data: {
+        vote: vote,
+        id: id
+    }
+  })
+  .done(function(response){
+    console.log('updated funniness');
+    getJokes();
+  })
+  .fail(function(error){
+    alert("Funniness Value can only be between 1 and 10!");
+    console.log(('funniness update fail'));
+  })//end ajax put
+}//end runVote function
+
+function sortOutputs(howSort){
+  console.log(howSort, 'insort');
+  $.ajax({
+    type: 'POST',
+    url: '/joke/sort',
+    data: {sort: howSort}
+
+  }).done(function(response){
+    console.log('sortOutputsPost Success', response);
+    writeJokes(response);
+  }).fail(function(response){
+    console.log('sortOutputsPost fail', response);
+  });
+
+}//end sortOutputs
+
 function writeJokes(array){
   $('#whoseJokeIn').val('');
   $('#questionIn').val('');
   $('#punchlineIn').val('');
-  $('#date_addedIn').val('');
   $('#funniness').val('');
-  $('#outputDiv').empty();
+  $('#tbody').empty();
   console.log('inwritejokes');
   for(i=0;i<array.length;i++){
-    let stringToAppend = '<li class = "jokeOutput">';
-    stringToAppend += array[i].whos_joke+': '+array[i].joke_question+' '+array[i].punch_line+' <b>Date Added:</b> '+array[i].date_added.substring(0,10)+' <b>Funniness:</b> '+array[i].funniness+'</li>';
-    $('#outputDiv').append(stringToAppend);
+    let id = array[i].id;
+    let stringToAppend = `<tr = "jokeOutput"><td>`;
+    stringToAppend += array[i].whos_joke+'</td><td>'+array[i].joke_question+'</td><td>'+array[i].punch_line;
+    stringToAppend += '</td><td>'+array[i].date_added.substring(0,10)+'</td><td>'+array[i].funniness;
+    stringToAppend += '</td><td>'+`<button class = "deleteButton" id = ${id}>Delete Joke</button></td><td>`;
+    stringToAppend += `<button class = "upvote" id = ${id} value = "u">Upvote</button></td><td>`;
+    stringToAppend += `<button class = "downvote" id = ${id} value = "d">Downvote</button></td><td>`;
+    stringToAppend += `<button class = "edit" id = ${id}>Edit Joke</button></td></tr>`;
+    $('.jokeTable').append(stringToAppend);
   }
 }//end writeJokes

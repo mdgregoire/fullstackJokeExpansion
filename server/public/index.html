@@ -6,17 +6,49 @@
   </head>
   <script src="./vendors/jquery-3.3.1.min.js" charset="utf-8"></script>
   <script src="./scripts/client.js" charset="utf-8"></script>
-
+<link rel="stylesheet" href="/css/style.css">
   <body>
     <h1>fullstackJokeExpansion</h1>
-    <input type='text' id='whoseJokeIn' placeholder='whose joke' />
+        <input type='text' id='whoseJokeIn' placeholder='whose joke' />
         <input type='text' id='questionIn' placeholder='question' />
         <input type='text' id='punchlineIn' placeholder='punchline' />
-        <input type='date' id='date_addedIn' placeholder='Date' />
         <input type='number' min= '1' max= '10' id='funniness' placeholder='funniness' />
         <button id='addJokeButton'>Add Joke</button>
         <h2>Jokes:</h2>
         <div id='outputDiv'>
+          <table class= 'jokeTable'>
+            <thead>
+              <tr>
+                <td><b>Who's Joke</b></td>
+                <td><b>Joke Question</b></td>
+                <td><b>Punch Line</b></td>
+                <td><b>Date Added</b></td>
+                <td><b>Funniness Rating</b></td>
+              </tr>
+              <tbody id='tbody'></tbody>
+            </thead>
+          </table>
         </div>
+        <div id='editField'>
+          <input type='text' id='whoseJokeEdit' placeholder='whoes joke' />
+          <input type='text' id='questionEdit' placeholder='question' />
+          <input type='text' id='punchlineEdit' placeholder='punchline' />
+          <input type='number' min= '1' max= '10' id='funninessEdit' placeholder='funniness'/>
+          <button id='editJokeSubmit'>Edit Joke</button>
+        </div>
+        <div id='sortButtons'>
+          <h2>Sort By:</h2>
+            <select id= 'sortSelector'>
+              <option value="nameAscending">Name: Ascending</option>
+              <option value="nameDescending">Name: Descending</option>
+              <option value="funninessAscending">Funniness: Low to High</option>
+              <option value="funninessDescending">Funniness: High to Low</option>
+              <option value="dateAddedAscending">Date Added: Oldest First</option>
+              <option value="dateAddedDescending">Date Added: Newest First</option>
+            </select>
+            <button id='sort'>Sort!</button>
+
+        </div>
+
       </body>
     </html>
