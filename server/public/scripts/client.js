@@ -12,7 +12,6 @@ function onReady(){
 
   $('#outputDiv').on('click', '.deleteButton', function(){
     var id = $(this).attr('id');
-    console.log(id, 'indeleteclick');
     deleteJoke(id);
   });//end onclick delete button
 
@@ -35,9 +34,7 @@ function onReady(){
 
   $('#editField').on('click','.editJokeSubmit', function(){
       submitEditedJoke($(this).attr('id'))
-
-  })
-
+  })//end editJokeSubmit onclick
 }//end onReady function
 
 function deleteJoke(id){
@@ -48,11 +45,11 @@ function deleteJoke(id){
     data: {data : id}
   })
   .done(function(response){
-    console.log('deletewassuccess', response);
+    console.log('delete was a success', response);
     getJokes();
   })
   .fail(function(error){
-    console.log(error);
+    console.log(error, 'in Delete');
   });
 }//end deleteJoke
 
@@ -68,15 +65,16 @@ function getJokes() {
     url: '/joke'
   })
   .done(function(response){
-    console.log('getwassuccesssful', response);
+    console.log('get Jokes was successsful', response);
     writeJokes(response);
   })
   .fail(function(error){
-    console.log(error);
+    console.log(error, 'error in GET jokes');
   })
 }//end getJokes
 
 function getEditJoke(id){
+  //this function populates the edit fields with the old information and creates a button that calls the submit edited joke
   $.ajax({
     type: 'POST',
     url: '/joke/edit',
@@ -109,12 +107,9 @@ function getNewJoke(){
   }).fail(function(response){
     console.log('getNewJokePost fail', response);
   });
-
 }//end getNewJoke post function
 
 function runVote(vote, id){
-  console.log("in runvote");
-  console.log(vote, id, 'inrunvote');
   $.ajax({
     type: 'PUT',
     url: '/joke/vote',
@@ -124,12 +119,12 @@ function runVote(vote, id){
     }
   })
   .done(function(response){
-    console.log('updated funniness');
+    console.log('updated funniness', response);
     getJokes();
   })
   .fail(function(error){
     alert("Funniness Value can only be between 1 and 10!");
-    console.log(('funniness update fail'));
+    console.log(('funniness update fail', error));
   })//end ajax put
 }//end runVote function
 
@@ -139,14 +134,12 @@ function sortOutputs(howSort){
     type: 'POST',
     url: '/joke/sort',
     data: {sort: howSort}
-
   }).done(function(response){
     console.log('sortOutputsPost Success', response);
     writeJokes(response);
   }).fail(function(response){
     console.log('sortOutputsPost fail', response);
   });
-
 }//end sortOutputs
 
 function submitEditedJoke(id){
@@ -163,8 +156,9 @@ function submitEditedJoke(id){
           }
   }).done(function(response){
     console.log('submitEditedJoke Success', response);
-  ////----  //a call to re-write the db of jokes goes here
     getJokes();
+    $('#editField').hide();
+    $('.editJokeSubmit').remove();
   }).fail(function(response){
     console.log('submitEditedJoke fail', response);
   });

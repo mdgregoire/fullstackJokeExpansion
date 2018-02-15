@@ -125,9 +125,6 @@ router.put('/editSubmit', function(request, response){
                    SET whos_joke = '${editedJoke.whos_joke}', joke_question = '${editedJoke.joke_question}',
                    punch_line = '${editedJoke.punch_line}', funniness = ${editedJoke.funniness}
                    WHERE id = ${editedJoke.id}`;
-                   console.log(sqlText);
-
-
   pool.query(sqlText)
   .then(function(result){
     console.log('success in editput');
